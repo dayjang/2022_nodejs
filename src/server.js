@@ -14,13 +14,23 @@ const handleLogin = (req, res) => {
   return res.send("Login Here");
 };
 
-const middleWare = (req, res, next) => {
-  console.log(`SB is going throu middle ware.. ${req.url}`);
-  // return res.send("MIDDEL WARE ? ");
+const logger = (req, res, next) => {
+  console.log(`SB is going throu middle ware..${req.method} ${req.url}`);
   next();
 };
 
-app.get("/", middleWare, handleHome);
+const privateMiddle = (req, res, next) => {
+  const url = req.url;
+  if (url === "/protected") {
+    console.log("ALERT!");
+    return res.send("<h2>NOT ALLOWED</h2>");
+  }
+  console.log("allowed, you can continue......");
+  next();
+};
+app.use(logger);
+app.use(privateMiddle);
+app.get("/", handleHome);
 app.get("/login", handleLogin);
 
 app.listen(PORT, handleListening);
